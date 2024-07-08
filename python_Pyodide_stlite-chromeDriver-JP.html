@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>ChromeDriver</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.39.0/build/stlite.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@stlite/mountable@0.39.0/build/stlite.js"></script>
+    <script>
+      stlite.mount(
+ `
+#▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+import streamlit as st
+import pathlib
+import os
+import json
+from pyodide.http import open_url # NOTE: stliteではrequestsやurllibは使えないためこちらを使う
+
+url = f"https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json"
+res = open_url(url)
+res_json = json.loads(res.read())
+
+version = res_json["channels"]["Stable"]["version"]
+channel = res_json["channels"]["Stable"]["channel"]
+
+st.write(channel + "最新版：" + "[" + version + "]")
+platform = st.radio("Platform",("win64", "win32", "mac-x64", "mac-arm64", "linux64"), horizontal=True)
+
+if platform == "win64":
+    driver_platform = res_json["channels"]["Stable"]["downloads"]["chromedriver"][4]["platform"]
+    driver_URL = res_json["channels"]["Stable"]["downloads"]["chromedriver"][4]["url"]
+    chrome_platform = res_json["channels"]["Stable"]["downloads"]["chrome"][4]["platform"]
+    chrome_URL = res_json["channels"]["Stable"]["downloads"]["chrome"][4]["url"]
+elif platform == "win32":
+    driver_platform = res_json["channels"]["Stable"]["downloads"]["chromedriver"][3]["platform"]
+    driver_URL = res_json["channels"]["Stable"]["downloads"]["chromedriver"][3]["url"]
+    chrome_platform = res_json["channels"]["Stable"]["downloads"]["chrome"][3]["platform"]
+    chrome_URL = res_json["channels"]["Stable"]["downloads"]["chrome"][3]["url"]
+elif platform == "mac-x64":
+    driver_platform = res_json["channels"]["Stable"]["downloads"]["chromedriver"][2]["platform"]
+    driver_URL = res_json["channels"]["Stable"]["downloads"]["chromedriver"][2]["url"]
+    chrome_platform = res_json["channels"]["Stable"]["downloads"]["chrome"][2]["platform"]
+    chrome_URL = res_json["channels"]["Stable"]["downloads"]["chrome"][2]["url"]
+elif platform == "mac-arm64":
+    driver_platform = res_json["channels"]["Stable"]["downloads"]["chromedriver"][1]["platform"]
+    driver_URL = res_json["channels"]["Stable"]["downloads"]["chromedriver"][1]["url"]
+    chrome_platform = res_json["channels"]["Stable"]["downloads"]["chrome"][1]["platform"]
+    chrome_URL = res_json["channels"]["Stable"]["downloads"]["chrome"][1]["url"]
+elif platform == "linux64":
+    driver_platform = res_json["channels"]["Stable"]["downloads"]["chromedriver"][0]["platform"]
+    driver_URL = res_json["channels"]["Stable"]["downloads"]["chromedriver"][0]["url"]
+    chrome_platform = res_json["channels"]["Stable"]["downloads"]["chrome"][0]["platform"]
+    chrome_URL = res_json["channels"]["Stable"]["downloads"]["chrome"][0]["url"]
+
+st.write("")
+st.write("ChromeDriver")
+st.markdown(
+f'<a href="{driver_URL}" style="display: inline-block; padding: 12px 20px; background-color: #4CAF50; color: white; text-align: center; text-decoration: none; font-size: 16px; border-radius: 4px;">{driver_platform}用：ChromeDriver最新版[{version}]をダウンロード</a>',
+unsafe_allow_html=True
+)
+
+st.write("ChromeBrowser")
+st.markdown(
+f'<a href="{chrome_URL}" style="display: inline-block; padding: 12px 20px; background-color: #4CAF50; color: white; text-align: center; text-decoration: none; font-size: 16px; border-radius: 4px;">{chrome_platform}用：ChromeBrowser最新版[{version}]をダウンロード</a>',
+unsafe_allow_html=True
+)
+#▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+`,
+      );
+    </script>
+  </body>
+</html>
